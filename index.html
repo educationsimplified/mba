@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Uzair's Study Hub</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- jsPDF CDN for generating PDFs -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <style>
+        /* Custom CSS for Parallax Effect */
+        .parallax-section {
+            /* Using a placeholder image for the background. You can replace this URL with your own image! */
+            background-image: url('https://placehold.co/1920x1080/000000/FFFFFF?text=MBA+Dreams');
+            background-attachment: fixed; /* This is key for the parallax effect */
+            background-position: center;
+            background-repeat: no-repeat;
+            background-size: cover;
+            height: 500px; /* Adjust height as needed */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            color: white;
+            position: relative;
+            overflow: hidden; /* Helps prevent scrollbar issues on some browsers */
+        }
+
+        /* Overlay for better text readability on the parallax background */
+        .parallax-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent dark overlay */
+        }
+
+        /* Custom font for a cleaner look */
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+
+        /* Hide the editor by default */
+        #study-plan-editor {
+            display: none;
+        }
+    </style>
+</head>
+<body class="font-inter bg-gray-50 text-gray-800">
+
+    <!-- Header / Navigation Bar -->
+    <header class="bg-indigo-700 text-white p-4 shadow-md">
+        <div class="container mx-auto flex justify-between items-center">
+            <h1 class="text-2xl font-bold">Uzair's Study Hub</h1>
+            <nav>
+                <a href="#welcome" class="text-white hover:text-indigo-200 mx-2 transition duration-200">Home</a>
+                <a href="#designs" class="text-white hover:text-indigo-200 mx-2 transition duration-200">Designs</a>
+                <a href="#plan" class="text-white hover:text-indigo-200 mx-2 transition duration-200">Study Plan</a>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Welcome Section -->
+    <section id="welcome" class="py-20 bg-white shadow-sm">
+        <div class="container mx-auto text-center">
+            <h2 class="text-5xl font-extrabold text-indigo-800 mb-4">Welcome Uzair!</h2>
+            <p class="text-xl text-gray-600">It's time to study.</p>
+        </div>
+    </section>
+
+    <!-- Parallax Section: MBA Countdown & Motivational Quote -->
+    <section class="parallax-section relative">
+        <div class="parallax-overlay"></div>
+        <div class="relative z-10 p-8 bg-black bg-opacity-50 rounded-lg shadow-xl max-w-2xl mx-auto">
+            <h3 class="text-4xl font-bold mb-4">MBA is on November!</h3>
+            <p id="days-left" class="text-3xl font-semibold mb-6"></p>
+            <p id="motivational-quote" class="text-xl italic"></p>
+        </div>
+    </section>
+
+    <!-- Buttons Section for Website Designs -->
+    <section id="designs" class="py-20 bg-gray-100">
+        <div class="container mx-auto text-center">
+            <h2 class="text-4xl font-bold text-indigo-700 mb-10">Explore Website Designs</h2>
+            <div class="flex flex-col md:flex-row justify-center items-center space-y-6 md:space-y-0 md:space-x-8">
+                <!-- Links to your other HTML files -->
+                <a href="web1.html" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-4 px-8 rounded-full shadow-lg transition duration-300 ease-in-out transform hover:scale-105">
+                    Website 1 Design
+                </a>
+                <a href="web2.html" class="bg-purple-600 hover:bg-purple-700 text-white font-bold py-4 px-8 rounded-full shadow-lg transition duration-300 ease-in-out transform hover:scale-105">
+                    Website 2 Design (Udemy Clone)
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Study Plan Section -->
+    <section id="plan" class="py-20 bg-white shadow-sm">
+        <div class="container mx-auto text-center">
+            <h2 class="text-4xl font-bold text-indigo-700 mb-6">Make a Plan Before Starting Studying</h2>
+            <p class="text-lg text-gray-700 mb-8">Click the button below to write and save your personalized study plan.</p>
+            <button id="open-editor-btn" class="bg-green-600 hover:bg-green-700 text-white font-bold py-4 px-8 rounded-full shadow-lg transition duration-300 ease-in-out transform hover:scale-105">
+                Create My Study Plan
+            </button>
+        </div>
+    </section>
+
+    <!-- Study Plan Editor Section (Initially Hidden) -->
+    <section id="study-plan-editor" class="py-20 bg-gray-100">
+        <div class="container mx-auto p-6 bg-white rounded-lg shadow-lg">
+            <h3 class="text-3xl font-bold text-indigo-700 mb-6 text-center">Your Study Plan Editor</h3>
+            <textarea id="plan-text" class="w-full p-4 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent resize-y" rows="15" placeholder="Start writing your study plan here..."></textarea>
+            <div class="mt-6 flex justify-center space-x-4">
+                <button id="save-pdf-btn" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-full shadow-md transition duration-300 ease-in-out transform hover:scale-105">
+                    Save as PDF
+                </button>
+                <button id="close-editor-btn" class="bg-red-500 hover:bg-red-600 text-white font-bold py-3 px-6 rounded-full shadow-md transition duration-300 ease-in-out transform hover:scale-105">
+                    Close Editor
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-gray-900 text-white p-6 text-center">
+        <div class="container mx-auto">
+            <p>&copy; 2025 Uzair's Study Hub. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script>
+        // Function to calculate days left until November 1st
+        function calculateDaysLeft() {
+            const today = new Date();
+            const currentYear = today.getFullYear();
+            // Month is 0-indexed, so 10 represents November
+            const novemberFirst = new Date(currentYear, 10, 1);
+
+            // If November 1st has already passed this year, calculate for the next year
+            if (today > novemberFirst) {
+                novemberFirst.setFullYear(currentYear + 1);
+            }
+
+            const diffTime = novemberFirst.getTime() - today.getTime();
+            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)); // Convert milliseconds to days
+            document.getElementById('days-left').textContent = `${diffDays} days left!`;
+        }
+
+        // Function to display a random motivational quote
+        function displayRandomQuote() {
+            const quotes = [
+                "The beautiful thing about learning is that no one can take it away from you. – B.B. King",
+                "Education is the most powerful weapon which you can use to change the world. – Nelson Mandela",
+                "The mind is not a vessel to be filled, but a fire to be kindled. – Plutarch",
+                "Success is not final, failure is not fatal: It is the courage to continue that counts. – Winston Churchill",
+                "The only way to do great work is to love what you do. – Steve Jobs",
+                "Strive not to be a success, but rather to be of value. – Albert Einstein"
+            ];
+            const randomIndex = Math.floor(Math.random() * quotes.length);
+            document.getElementById('motivational-quote').textContent = `"${quotes[randomIndex]}"`;
+        }
+
+        // Handle opening and closing the study plan editor
+        document.getElementById('open-editor-btn').addEventListener('click', () => {
+            document.getElementById('study-plan-editor').style.display = 'block';
+            // Scroll to the editor section
+            window.scrollTo({
+                top: document.getElementById('study-plan-editor').offsetTop - 50,
+                behavior: 'smooth'
+            });
+        });
+
+        document.getElementById('close-editor-btn').addEventListener('click', () => {
+            document.getElementById('study-plan-editor').style.display = 'none';
+        });
+
+        // Handle saving the text as a PDF
+        document.getElementById('save-pdf-btn').addEventListener('click', () => {
+            const planText = document.getElementById('plan-text').value;
+            if (planText.trim() === '') {
+                // Using a simple alert for now, but for a real app, you'd use a custom modal
+                alert('Please write something in your study plan before saving!');
+                return;
+            }
+
+            // Initialize jsPDF
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+
+            // Split text into lines to fit within PDF page width
+            const lines = doc.splitTextToSize(planText, 180); // 180mm width for text
+            let y = 10; // Starting Y position
+
+            doc.setFontSize(16);
+            doc.text("My Study Plan", 10, y);
+            y += 10;
+
+            doc.setFontSize(12);
+            doc.text(lines, 10, y);
+
+            doc.save('My_Study_Plan.pdf');
+        });
+
+        // Initialize functions when the page content is fully loaded
+        document.addEventListener('DOMContentLoaded', () => {
+            calculateDaysLeft();
+            displayRandomQuote();
+        });
+    </script>
+</body>
+</html>

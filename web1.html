@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MBA Foundation Course Viewer</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            // Udemy-like color palette
+            'udemy-black': '#1c1d1f',
+            'udemy-blue': '#a435f0',
+            'udemy-purple': '#5624d0',
+            'udemy-gray': '#6a6f73',
+            'udemy-light-gray': '#f7f9fa',
+          },
+          fontFamily: {
+            sans: ['Roboto', 'sans-serif'],
+          }
+        }
+      }
+    }
+  </script>
+</head>
+<body class="bg-udemy-light-gray font-sans text-udemy-black">
+
+  <header class="bg-udemy-black text-white py-12 text-center relative">
+    <div class="container mx-auto px-4">
+      <h1 class="text-5xl font-bold mb-2 tracking-tight">📚 MBA Foundation Course Viewer</h1>
+      <p class="text-xl text-gray-300">Learn smarter with structured playlists</p>
+    </div>
+    <a href="#" class="absolute top-4 right-4 bg-udemy-blue text-white font-bold py-2 px-4 rounded-full hover:bg-udemy-purple transition-colors duration-300">Admin Panel</a>
+  </header>
+
+  <div class="container mx-auto py-12 px-4" id="playlists"></div>
+
+  <div class="container mx-auto video-player hidden text-center px-4">
+    <div class="bg-white shadow-lg rounded-xl overflow-hidden mb-8">
+      <iframe id="videoFrame" class="w-full aspect-video" allowfullscreen frameborder="0"></iframe>
+    </div>
+  </div>
+
+  <footer class="bg-udemy-black text-udemy-light-gray text-center py-6 mt-12">
+    <div class="container mx-auto px-4">
+      <p class="text-sm">&copy; Made by Uzair • 2025</p>
+    </div>
+  </footer>
+
+  <script>
+    const csvUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRB5D3QHMbpg2XZ4RnxmClmlyz694xKGNliEBKPvQtQyYC_rdfhdAzeME-sFAwo4-iSsf2otCISyfbE/pub?gid=0&single=true&output=csv';
+
+    async function fetchCSV(url) {
+      const response = await fetch(url);
+      const data = await response.text();
+      return data.split('\n').slice(1).map(row => {
+        const cols = row.split(',');
+        return {
+          playlist: cols[0]?.trim(),
+          title: cols[1]?.trim(),
+          link: cols[2]?.trim()
+        };
+      });
+    }
+
+    function createPlaylistStructure(data) {
+      const playlists = {};
+      data.forEach(item => {
+        if (!playlists[item.playlist]) playlists[item.playlist] = [];
+        playlists[item.playlist].push(item);
+      });
+      return playlists;
+    }
+
+    function renderPlaylists(playlists) {
+      const container = document.getElementById('playlists');
+      Object.entries(playlists).forEach(([playlistName, videos]) => {
+        const playlistCard = document.createElement('div');
+        playlistCard.className = 'bg-white shadow-md rounded-lg p-6 mb-8 border border-gray-200';
+
+        const title = document.createElement('div');
+        title.className = 'text-xl font-bold cursor-pointer text-udemy-purple hover:underline transition-colors duration-300';
+        title.textContent = playlistName;
+        title.addEventListener('click', () => {
+          videoList.classList.toggle('hidden');
+        });
+
+        const videoList = document.createElement('ul');
+        videoList.className = 'mt-4 space-y-2 hidden';
+
+        videos.forEach(video => {
+          const videoItem = document.createElement('li');
+          videoItem.className = 'bg-gray-50 border border-gray-200 rounded-lg p-3 text-udemy-gray cursor-pointer hover:bg-udemy-purple hover:text-white transition-colors duration-300 flex items-center justify-between';
+          videoItem.innerHTML = `
+            <span>Video ${video.title}</span>
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-udemy-gray group-hover:text-white" viewBox="0 0 20 20" fill="currentColor">
+              <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clip-rule="evenodd" />
+            </svg>
+          `;
+          videoItem.addEventListener('click', () => {
+            document.querySelector('.video-player').classList.remove('hidden');
+            const videoID = new URL(video.link).pathname.split('/').pop().split('?')[0];
+            document.getElementById('videoFrame').src = `https://www.youtube.com/embed/${videoID}?autoplay=1`;
+            window.scrollTo({
+              top: document.querySelector('.video-player').offsetTop - 50,
+              behavior: 'smooth'
+            });
+          });
+          videoList.appendChild(videoItem);
+        });
+
+        playlistCard.appendChild(title);
+        playlistCard.appendChild(videoList);
+        container.appendChild(playlistCard);
+      });
+    }
+
+    async function init() {
+      const rawData = await fetchCSV(csvUrl);
+      const playlists = createPlaylistStructure(rawData);
+      renderPlaylists(playlists);
+    }
+
+    init();
+  </script>
+
+</body>
+</html>
